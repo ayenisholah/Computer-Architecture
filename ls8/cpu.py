@@ -13,13 +13,13 @@ class CPU:
         self.pc = 0
 
     def ram_read(self, index):
-        print(self.ram[index])
+        return(self.ram[index])
 
     def ram_write(self, value):
         command = input("Enter an address you want to write to: ")
         index = int(command)
         self.ram[index] = value
-        print(self.ram[index])
+        return(self.ram[index])
 
     def load(self):
         """Load a program into memory."""
@@ -83,9 +83,25 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        PRINT_TOM = 2
+        PRINT_NUM = 3
+        SAVE = 4
+        PRINT_REG = 5
+        ADD = 6
+        IR = None
+        running = True
+        # looks like we need a converter for the binary
+        while running:
+
+            command = self.ram_read(self.pc)
+            if command == SAVE:
+                return
+            elif command == PRINT_REG:
+                pass
+            else:
+                print(f"Unknown Instruction {command}")
+                sys.exit(1)
+
+            self.pc += 1
 
 
-cpu = CPU()
-
-cpu.ram_write(7)
