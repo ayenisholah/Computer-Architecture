@@ -8,13 +8,17 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
+        self.reg = [0] * 8
         self.ram = [None] * 256
         self.pc = 0
-        self.reg = []
 
-    def ram_read(self):
-        command = input("Enter an address to read from: ")
+    def ram_read(self, index):
+        print(self.ram[index])
+
+    def ram_write(self, value):
+        command = input("Enter an address you want to write to: ")
         index = int(command)
+        self.ram[index] = value
         print(self.ram[index])
 
     def load(self):
@@ -43,7 +47,17 @@ class CPU:
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        # elif op == "SUB": etc
+        elif op == "SUB":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "HLT":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "SAVE":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "PRINT_NUM":
+            self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "PRINT_REG":
+            self.reg[reg_a] -= self.reg[reg_b]
+
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -74,4 +88,4 @@ class CPU:
 
 cpu = CPU()
 
-cpu.ram_read()
+cpu.ram_write(7)
