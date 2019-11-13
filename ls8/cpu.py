@@ -1,52 +1,58 @@
-"""CPU functionality."""
-
+"""
+    CPU functionality.
+"""
 import sys
 
-
 class CPU:
-    """Main CPU class."""
+    """
+    Main CPU class.
+    """
 
     def __init__(self):
         """Construct a new CPU."""
         self.reg = [0] * 8
-        self.ram = [None] * 256
+        self.ram = [0] * 256
         self.pc = 0
 
     def ram_read(self, index):
         return(self.ram[index])
 
-    def ram_write(self, value):
-        command = input("Enter an address you want to write to: ")
-        index = int(command)
+    def ram_write(self, value, index):
         self.ram[index] = value
         return(self.ram[index])
 
     def load(self):
         """Load a program into memory."""
-
         address = 0
-        with open("interrupts.ls8") as document:
-            for line in document:
-                print(line)
-
-        if len(sys.argv) != 2:
-            print("usage: 02-fileio02.py <filename>")
-            sys.exit(1)
-
-    try:
-        with open(sys.argv[1]) as f:
-            for line in f:
-                print(line)
-    except FileNotFoundError:
-        print(f"{sys.argv[0]}: {sys.argv[1]} not found")
-
-        # For now, we've just hardcoded a program:
 
         program = []
+        try:
+            with open(sys.argv[1]) as document:
+                for line in document:
+                    if line[0].startswith("0") or line[0].startswith("1"):
+                        # split before and after any comment symbol '#'
+                        comment_split = line.split("#")[0]
+                        # convert the pre-comment portion (to the left) from binary to a value
+                        # extract the first part of the split to a number variable
+                        # and trim whitespace
+                        num = comment_split.strip()
 
-        # for instruction in program:
-        #     self.ram[address] = instruction
-        #     address += 1
+                        # ignore blank lines / comment only lines
+                        if len(num) == 0:
+                            continue
+
+                        # set the number to an integer of base 2
+                        value = int(num, 2)
+                        program.append(value)
+                    # print the value in binary and in decimal
+                    # print(f"{value:08b}: {value:d}")
+        except FileNotFoundError:
+            print(f"{sys.argv[0]}: {sys.argv[1]} not found")
+            sys.exit(2)
+
+        for instructions in program:
+            self.ram[address] = instructions
+            address += 1
 
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
@@ -87,29 +93,4 @@ class CPU:
 
         print()
 
-    def run(self):
-        """Run the CPU."""
-        PRINT_SHOLA = 2
-        PRINT_NUM = 3
-        SAVE = 4
-        PRINT_REG = 5
-        ADD = 6
-        IR = None
-        running = True
-        # looks like we need a converter for the binary
-        while running:
-
-            command = self.ram_read(self.pc)
-            if command == SAVE:
-                return
-            elif command == PRINT_REG:
-                pass
-            else:
-                print(f"Unknown Instruction {command}")
-                sys.exit(1)
-
-            self.pc += 1
-
-
-cpu = CPU()
-cpu.load()
+    
