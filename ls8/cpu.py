@@ -93,4 +93,43 @@ class CPU:
 
         print()
 
-    
+    def run(self):
+        """Run the CPU."""
+        PRN = 0b01000111
+        LDI = 0b10000010
+        HLT = 0b00000001
+        MUL = 0b10100010
+        PUSH = 0b01000101
+        POP = 0b01000110
+        running = True
+
+        while running:
+            IR = self.ram_read(self.pc)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+            if IR == LDI:
+                self.reg[operand_a] = operand_b
+                self.pc += 3
+
+            elif IR == PRN:
+                print(self.reg[operand_a])
+                self.pc += 2
+
+            elif IR == MUL:
+                print(self.reg[operand_a] * self.reg[operand_b])
+                self.pc += 3
+
+            elif IR == PUSH:
+                val = self.reg[operand_a]
+                self.reg -= 1
+                self.ram_write(self.reg, val)
+                self.pc += 3
+
+            elif IR == POP:
+                val = self.reg[operand_a]
+                self.reg += 1
+                self.ram_write(self.reg, val)
+                self.pc += 3
+
+            elif IR == HLT:
+                running = False
