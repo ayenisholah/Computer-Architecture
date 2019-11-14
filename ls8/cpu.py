@@ -3,6 +3,7 @@
 """
 import sys
 
+
 class CPU:
     """
     Main CPU class.
@@ -13,6 +14,7 @@ class CPU:
         self.reg = [0] * 8
         self.ram = [0] * 256
         self.pc = 0
+        self.IR = None
 
     def ram_read(self, index):
         return(self.ram[index])
@@ -104,28 +106,39 @@ class CPU:
         running = True
 
         while running:
+            command = self.ram_read(self.pc)
             IR = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
-            if IR == LDI:
-                self.reg[operand_a] = operand_b
-                self.pc += 3
 
-            elif IR == PRN:
-                print(self.reg[operand_a])
-                self.pc += 2
+            if command == LDI:
+                self.IR = command
+                instruction_size = 3
+                reg = self.ram[self.pc + 1]
+                value = self.ram[self.pc + 2]
+                self.reg[reg] = value
 
-            elif IR == MUL:
-                print(self.reg[operand_a] * self.reg[operand_b])
-                self.pc += 3
+            elif command == PRN:
+                self.IR = command
+                instruction_size = 2
+                reg = self.ram[self.pc + 1]
+                print(self.reg[reg])
 
-            elif IR == PUSH:
+            elif command == MUL:
+                self.IR = command
+                instruction_size = 3
+                reg_a = self.ram[self.pc + 1]
+                reg_b = self.ram[self.pc + 2]
+                self.reg[reg_a] *= self.reg[reg_b]
+
+            elif command == PUSH:
+                self.IR = command
                 val = self.reg[operand_a]
-                self.reg -= 1
+                # self.reg -= 1
                 self.ram_write(self.reg, val)
                 self.pc += 3
 
-            elif IR == POP:
+            elif command == POP:
                 val = self.reg[operand_a]
                 self.reg += 1
                 self.ram_write(self.reg, val)
@@ -133,3 +146,5 @@ class CPU:
 
             elif IR == HLT:
                 running = False
+
+            self.pc += instruction_size
